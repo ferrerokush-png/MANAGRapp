@@ -5,8 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.releaseflow.personal.data.local.converters.AIQueryTypeConverter
 import com.example.releaseflow.personal.data.local.converters.ContactTypeConverter
 import com.example.releaseflow.personal.data.local.converters.DateConverter
@@ -54,16 +52,6 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        // Migration from version 1 to 2
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // Add new columns to ReleaseProject table
-                database.execSQL("ALTER TABLE ReleaseProject ADD COLUMN completionPercentage INTEGER NOT NULL DEFAULT 0")
-                database.execSQL("ALTER TABLE ReleaseProject ADD COLUMN completedTasks INTEGER NOT NULL DEFAULT 0")
-                database.execSQL("ALTER TABLE ReleaseProject ADD COLUMN totalTasks INTEGER NOT NULL DEFAULT 0")
-            }
-        }
-
         fun getInstance(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -71,7 +59,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "release_flow.db"
                 )
-                    .addMigrations(MIGRATION_1_2)
                     .fallbackToDestructiveMigration()
                     .build().also { INSTANCE = it }
             }
