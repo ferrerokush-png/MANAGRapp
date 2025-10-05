@@ -1,11 +1,14 @@
 package com.example.releaseflow.personal.domain.usecase.calendar
 
-import com.example.releaseflow.personal.domain.model.*
-import com.example.releaseflow.personal.domain.repository.ProjectRepository
+import com.example.releaseflow.core.domain.model.Project
+import com.example.releaseflow.core.domain.model.CalendarEvent
+import com.example.releaseflow.core.domain.model.EventType
+import com.example.releaseflow.core.domain.repository.ProjectRepository
 import java.time.LocalDate
+import kotlinx.coroutines.flow.first
 
 // A functional contract to compute upload-by dates; implemented by the distributor math use case.
-typealias ComputeUploadBy = (releaseDate: LocalDate, profile: DistributorProfile?, leadDaysOverride: Long?) -> LocalDate
+typealias ComputeUploadBy = (releaseDate: LocalDate, profile: String?, leadDaysOverride: Long?) -> LocalDate
 
 class BuildProjectCalendarEventsUseCase(
     private val computeUploadByDate: ComputeUploadBy,
@@ -15,52 +18,27 @@ class BuildProjectCalendarEventsUseCase(
 
         // Release day
         events += CalendarEvent(
-            id = "rel-${project.id}",
+            id = project.id,
             projectId = project.id,
-            date = project.releaseDate,
-            type = EventType.RELEASE,
             title = "Release Day — ${project.title}",
             description = "${project.type}",
+            type = EventType.RELEASE_DATE,
+            date = project.releaseDate
         )
 
         // Upload-by date (distributor policy)
         val uploadBy = computeUploadByDate(
             project.releaseDate,
-            project.distributorProfile,
+            project.distributorType.name,
             leadDaysOverride
         )
         events += CalendarEvent(
-            id = "up-${project.id}",
+            id = project.id + 1000, // Different ID to avoid conflicts
             projectId = project.id,
-            date = uploadBy,
-            type = EventType.UPLOAD_BY,
             title = "Upload to Distributor — ${project.title}",
+            type = EventType.UPLOAD_DEADLINE,
+            date = uploadBy
         )
-
-        // Task due dates
-        project.tasks.forEach { task ->
-            events += CalendarEvent(
-                id = "tsk-${task.id}",
-                projectId = project.id,
-                date = task.due,
-                type = EventType.TASK_DUE,
-                title = task.title,
-                refId = task.id,
-            )
-        }
-
-        // Campaign posts (convert LocalDateTime -> LocalDate)
-        project.campaigns.flatMap { it.posts }.forEach { post ->
-            val date = post.scheduledAt?.toLocalDate() ?: return@forEach
-            events += CalendarEvent(
-                id = "pst-${post.id}",
-                projectId = project.id,
-                date = date,
-                type = EventType.CAMPAIGN_POST,
-                title = "Post: ${post.platform}",
-                refId = post.id,
-            )
-        }
 
         return events.sortedBy { it.date }
     }
@@ -71,7 +49,7 @@ class ListCalendarEventsInRangeUseCase(
     private val buildProjectEvents: BuildProjectCalendarEventsUseCase,
 ) {
     suspend operator fun invoke(start: LocalDate, end: LocalDate): List<CalendarEvent> {
-        val projects = projectRepository.listProjects()
+        val projects = projectRepository.getAllProjects().first()
         val all = projects.flatMap { buildProjectEvents(it) }
         return all.filter { it.date >= start && it.date <= end }.sortedBy { it.date }
     }

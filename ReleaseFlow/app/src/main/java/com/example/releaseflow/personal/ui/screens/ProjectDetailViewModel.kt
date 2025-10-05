@@ -5,19 +5,23 @@ package com.example.releaseflow.personal.ui.screens
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.releaseflow.personal.data.local.dao.AppDao
+import com.example.releaseflow.personal.data.local.dao.ProjectDao
+import com.example.releaseflow.personal.data.local.dao.TaskDao
 import com.example.releaseflow.personal.data.local.entity.ReleaseProject
 import com.example.releaseflow.personal.data.local.entity.ReleaseTask
+import com.example.releaseflow.personal.data.local.entity.TaskCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @HiltViewModel
 class ProjectDetailViewModel @Inject constructor(
-    private val dao: AppDao,
+    private val projectDao: ProjectDao,
+    private val taskDao: TaskDao,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -25,7 +29,7 @@ class ProjectDetailViewModel @Inject constructor(
 
     // Fetch the specific project by ID
     val project: StateFlow<ReleaseProject?> =
-        dao.getProjectById(projectId)
+        projectDao.getProjectById(projectId)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -34,50 +38,52 @@ class ProjectDetailViewModel @Inject constructor(
 
     // Observe tasks for this project
     val tasks: StateFlow<List<ReleaseTask>> =
-        dao.getTasksForProject(projectId)
+        taskDao.getTasksForProject(projectId)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptyList()
             )
 
-    fun addTask(description: String, deadlineMillis: Long) {
-        if (description.isBlank()) return
+    fun addTask(title: String, description: String, deadlineMillis: Long, category: TaskCategory = TaskCategory.PRODUCTION) {
+        if (title.isBlank()) return
         viewModelScope.launch {
-            dao.insertTask(
+            taskDao.insertTask(
                 ReleaseTask(
                     projectId = projectId,
+                    title = title.trim(),
                     description = description.trim(),
-                    deadline = deadlineMillis,
+                    dueDate = Date(deadlineMillis),
+                    category = category,
                     isCompleted = false
                 )
             )
         }
     }
 
-    fun updateTask(task: ReleaseTask, newDescription: String, newDeadlineMillis: Long) {
-        if (newDescription.isBlank()) return
+    fun updateTask(task: ReleaseTask, newTitle: String, newDescription: String, newDeadlineMillis: Long) {
+        if (newTitle.isBlank()) return
         viewModelScope.launch {
-            dao.updateTask(task.copy(description = newDescription.trim(), deadline = newDeadlineMillis))
+            taskDao.updateTask(task.copy(title = newTitle.trim(), description = newDescription.trim(), dueDate = Date(newDeadlineMillis)))
         }
     }
 
     fun deleteTask(task: ReleaseTask) {
         viewModelScope.launch {
-            dao.deleteTask(task)
+            taskDao.deleteTask(task)
         }
     }
 
     fun toggleTaskCompletion(task: ReleaseTask, completed: Boolean) {
         viewModelScope.launch {
-            dao.updateTask(task.copy(isCompleted = completed))
+            taskDao.updateTask(task.copy(isCompleted = completed))
         }
     }
 
     fun updateArtwork(artworkUri: String) {
         viewModelScope.launch {
             val current = project.value ?: return@launch
-            dao.updateProject(current.copy(artworkUri = artworkUri))
+            projectDao.updateProject(current.copy(artworkPath = artworkUri))
         }
     }
 }

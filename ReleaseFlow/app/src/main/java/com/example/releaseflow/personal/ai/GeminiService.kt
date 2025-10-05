@@ -1,35 +1,42 @@
 package com.example.releaseflow.personal.ai
 
+import android.content.Context
+import com.example.releaseflow.personal.R
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object GeminiService {
-    @Volatile
-    private var apiKey: String? = null
-
-    fun configure(key: String) {
-        apiKey = key
+@Singleton
+class GeminiService @Inject constructor(
+    private val context: Context
+) {
+    private val apiKey: String by lazy {
+        context.getString(R.string.gemini_api_key)
     }
 
-    private fun modelOrNull(): GenerativeModel? {
-        val key = apiKey
-        return if (!key.isNullOrBlank()) GenerativeModel(
+    private fun createModel(): GenerativeModel {
+        return GenerativeModel(
             modelName = "gemini-1.5-flash",
-            apiKey = key
-        ) else null
+            apiKey = apiKey
+        )
     }
 
-    suspend fun generate(prompt: String): String = withContext(Dispatchers.IO) {
-        if (prompt.isBlank()) return@withContext "Please enter a prompt."
-        val m = modelOrNull() ?: return@withContext (
-            "Gemini API key missing. Go to Settings and add it, or set a resource string named gemini_api_key."
-        )
-        return@withContext try {
-            val response = m.generateContent(prompt)
-            response.text ?: "No response text returned."
-        } catch (t: Throwable) {
-            "AI error: ${t.message ?: "unknown"}"
+    suspend fun generate(prompt: String): Result<String> = withContext(Dispatchers.IO) {
+        if (prompt.isBlank()) {
+            return@withContext Result.failure(IllegalArgumentException("Prompt cannot be empty"))
+        }
+
+        try {
+            val model = createModel()
+            val response = model.generateContent(prompt)
+            val text = response.text ?: return@withContext Result.failure(
+                IllegalStateException("No response text returned")
+            )
+            Result.success(text)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }

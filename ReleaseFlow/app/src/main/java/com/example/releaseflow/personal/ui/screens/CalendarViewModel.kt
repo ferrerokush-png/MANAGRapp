@@ -2,7 +2,7 @@ package com.example.releaseflow.personal.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.releaseflow.personal.data.local.dao.AppDao
+import com.example.releaseflow.personal.data.local.dao.ProjectDao
 import com.example.releaseflow.personal.data.local.entity.ReleaseProject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
@@ -18,17 +18,17 @@ import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    dao: AppDao
+    projectDao: ProjectDao
 ) : ViewModel() {
 
     private val zoneId: ZoneId = ZoneId.systemDefault()
 
     // All projects grouped by release LocalDate
     val projectsByDate: StateFlow<Map<LocalDate, List<ReleaseProject>>> =
-        dao.getAllProjects()
+        projectDao.getAllProjects()
             .map { projects ->
                 projects.groupBy { p ->
-                    Instant.ofEpochMilli(p.releaseDate).atZone(zoneId).toLocalDate()
+                    Instant.ofEpochMilli(p.releaseDate.time).atZone(zoneId).toLocalDate()
                 }
             }
             .stateIn(
@@ -46,7 +46,7 @@ class CalendarViewModel @Inject constructor(
     // Projects on the selected date
     val selectedDateProjects: StateFlow<List<ReleaseProject>> =
         combine(projectsByDate, selectedDate) { map, date ->
-            map[date].orEmpty().sortedBy { it.name }
+            map[date].orEmpty().sortedBy { it.title }
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),

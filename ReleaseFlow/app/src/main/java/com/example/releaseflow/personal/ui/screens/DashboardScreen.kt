@@ -76,8 +76,8 @@ fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewMo
         if (showAddDialog) {
             AddProjectDialog(
                 onDismiss = { showAddDialog = false },
-                onSave = { name, type, dateMillis ->
-                    viewModel.addProject(name, type, dateMillis)
+                onSave = { title, artistName, type, dateMillis ->
+                    viewModel.addProject(title, artistName, type, java.util.Date(dateMillis))
                     showAddDialog = false
                 }
             )
@@ -105,11 +105,11 @@ private fun ProjectList(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = project.name,
+                    text = project.title,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "${project.projectType} • ${formatDate(project.releaseDate)}",
+                    text = "${project.releaseType.name} • ${formatDate(project.releaseDate.time)}",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -120,12 +120,17 @@ private fun ProjectList(
 @Composable
 private fun AddProjectDialog(
     onDismiss: () -> Unit,
-    onSave: (name: String, type: String, releaseDateMillis: Long) -> Unit
+    onSave: (title: String, artistName: String, type: com.example.releaseflow.personal.data.local.entity.ReleaseType, releaseDateMillis: Long) -> Unit
 ) {
     val context = LocalContext.current
 
-    var name by remember { mutableStateOf("") }
-    val typeOptions = listOf("Single", "EP", "Album")
+    var title by remember { mutableStateOf("") }
+    var artistName by remember { mutableStateOf("") }
+    val typeOptions = listOf(
+        com.example.releaseflow.personal.data.local.entity.ReleaseType.SINGLE,
+        com.example.releaseflow.personal.data.local.entity.ReleaseType.EP,
+        com.example.releaseflow.personal.data.local.entity.ReleaseType.ALBUM
+    )
     var typeExpanded by remember { mutableStateOf(false) }
     var selectedType by remember { mutableStateOf(typeOptions.first()) }
 
@@ -155,9 +160,17 @@ private fun AddProjectDialog(
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Project name") },
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Project Title") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(12.dp))
+                
+                OutlinedTextField(
+                    value = artistName,
+                    onValueChange = { artistName = it },
+                    label = { Text("Artist Name") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(12.dp))
@@ -165,7 +178,7 @@ private fun AddProjectDialog(
                 // Type dropdown
                 Column(modifier = Modifier.fillMaxWidth()) {
                     OutlinedTextField(
-                        value = selectedType,
+                        value = selectedType.name,
                         onValueChange = {},
                         label = { Text("Project type") },
                         modifier = Modifier.fillMaxWidth(),
@@ -176,7 +189,7 @@ private fun AddProjectDialog(
                         DropdownMenu(expanded = typeExpanded, onDismissRequest = { typeExpanded = false }) {
                             typeOptions.forEach { option ->
                                 DropdownMenuItem(
-                                    text = { Text(option) },
+                                    text = { Text(option.name) },
                                     onClick = {
                                         selectedType = option
                                         typeExpanded = false
@@ -198,8 +211,8 @@ private fun AddProjectDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onSave(name, selectedType, releaseDateMillis) },
-                enabled = name.isNotBlank()
+                onClick = { onSave(title, artistName, selectedType, releaseDateMillis) },
+                enabled = title.isNotBlank() && artistName.isNotBlank()
             ) { Text("Save") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }

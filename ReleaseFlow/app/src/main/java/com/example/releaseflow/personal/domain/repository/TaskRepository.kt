@@ -1,20 +1,15 @@
 package com.example.releaseflow.personal.domain.repository
 
-import com.example.releaseflow.personal.domain.model.SubTask
-import com.example.releaseflow.personal.domain.model.Task
-import com.example.releaseflow.personal.domain.model.TaskStatus
+import com.example.releaseflow.personal.data.local.entity.ReleaseTask
+import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
-    suspend fun listTasks(projectId: String): List<Task>
-    suspend fun getTask(taskId: String): Task?
-    suspend fun upsertTask(task: Task)
-    suspend fun deleteTask(taskId: String)
-
-    // Subtasks
-    suspend fun upsertSubTask(subTask: SubTask)
-    suspend fun deleteSubTask(subTaskId: String)
-
-    // Convenience operations
-    suspend fun updateTaskStatus(taskId: String, status: TaskStatus)
+    fun getAllTasks(): Flow<List<ReleaseTask>>
+    fun getTaskById(id: Long): Flow<ReleaseTask?>
+    fun getTasksForProject(projectId: Long): Flow<List<ReleaseTask>>
+    fun getTasksByCompletion(isCompleted: Boolean): Flow<List<ReleaseTask>>
+    suspend fun insertTask(task: ReleaseTask): Long
+    suspend fun updateTask(task: ReleaseTask): Int
+    suspend fun deleteTask(task: ReleaseTask): Int
+    suspend fun deleteTaskById(id: Long): Int
 }
-

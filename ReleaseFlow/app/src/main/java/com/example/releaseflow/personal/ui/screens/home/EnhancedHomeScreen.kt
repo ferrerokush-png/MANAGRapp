@@ -18,11 +18,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.releaseflow.core.design.component.*
+import com.example.releaseflow.core.design.component.GlassCard
+import com.example.releaseflow.core.design.component.PrimaryButton
+import com.example.releaseflow.core.design.component.LoadingIndicator
+import com.example.releaseflow.core.design.component.GenericErrorState
+import com.example.releaseflow.core.design.component.EmptyProjectsState
+import com.example.releaseflow.core.design.component.RFCard
+import com.example.releaseflow.core.design.component.glassmorphism
+import com.example.releaseflow.core.design.component.GlassStyle
 import com.example.releaseflow.core.domain.model.Project
+import com.example.releaseflow.core.domain.model.Task
+import java.text.SimpleDateFormat
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,8 +44,10 @@ fun EnhancedHomeScreen(
     onAIAssistantClick: () -> Unit,
     onCreateProjectClick: () -> Unit,
     onCalendarClick: () -> Unit = {},
-    onHubClick: () -> Unit = {}
+    onHubClick: () -> Unit = {},
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val greeting = when (LocalTime.now().hour) {
         in 0..11 -> "Good morning"
         in 12..17 -> "Good afternoon"
@@ -42,7 +56,7 @@ fun EnhancedHomeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.MusicNote, null, tint = MaterialTheme.colorScheme.primary)
@@ -57,107 +71,125 @@ fun EnhancedHomeScreen(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            item {
-                Text(
-                    "$greeting, Artist",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            item {
-                PrimaryButton(
-                    text = "New Release",
-                    onClick = onCreateProjectClick,
-                    icon = Icons.Default.Add,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    MetricCard("Releases", "3", Icons.Default.Album, Modifier.weight(1f), onProjectsClick)
-                    MetricCard("Deadlines", "5", Icons.Default.Event, Modifier.weight(1f), onCalendarClick)
+        when {
+            uiState.isLoading -> {
+                Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                    LoadingIndicator(message = "Loading...")
                 }
             }
-
-            item {
-                Text("Active Projects", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            }
-
-            item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(3) { index ->
-                        ProjectThumbnail(
-                            title = "Project ${index + 1}",
-                            progress = (index + 1) * 25f
-                        )
-                    }
+            uiState.error != null -> {
+                Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                    GenericErrorState(
+                        message = uiState.error!!,
+                        onRetryClick = { viewModel.refreshData() }
+                    )
                 }
             }
-
-            item {
-                GlassCard {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Lightbulb, null, tint = MaterialTheme.colorScheme.primary)
-                            Spacer(Modifier.width(8.dp))
-                            Text("Quick Insight", fontWeight = FontWeight.SemiBold)
-                        }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
                         Text(
-                            "Your latest single is performing well on Spotify. Consider creating more TikTok content to boost engagement.",
-                            style = MaterialTheme.typography.bodyMedium
+                            "$greeting, Artist",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold
                         )
                     }
+
+                    item {
+                        PrimaryButton(
+                            text = "New Release",
+                            onClick = onCreateProjectClick,
+                            icon = Icons.Default.Add,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            MetricCard(
+                                "Releases", 
+                                "${uiState.activeProjects.size}", 
+                                Icons.Default.Album, 
+                                Modifier.weight(1f), 
+                                onProjectsClick
+                            )
+                            MetricCard(
+                                "Tasks", 
+                                "${uiState.pendingTasksCount}", 
+                                Icons.Default.Event, 
+                                Modifier.weight(1f), 
+                                onCalendarClick
+                            )
+                        }
+                    }
+
+                    if (uiState.activeProjects.isNotEmpty()) {
+                        item {
+                            Text("Active Projects", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                        }
+
+                        item {
+                            LazyRow(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(uiState.activeProjects) { project ->
+                                    ProjectThumbnail(project = project)
+                                }
+                            }
+                        }
+                    }
+
+                    item {
+                        Text("Quick Actions", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            ActionButton("AI Assistant", Icons.Default.SmartToy, onAIAssistantClick, Modifier.weight(1f))
+                            ActionButton("Analytics", Icons.Default.Analytics, onAnalyticsClick, Modifier.weight(1f))
+                        }
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            ActionButton("Playlists", Icons.Default.QueueMusic, onHubClick, Modifier.weight(1f))
+                            ActionButton("Projects", Icons.Default.Folder, onProjectsClick, Modifier.weight(1f))
+                        }
+                    }
+
+                    if (uiState.upcomingDeadlines.isNotEmpty()) {
+                        item {
+                            Text("Upcoming Deadlines", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                        }
+
+                        items(uiState.upcomingDeadlines) { task ->
+                            DeadlineCard(task = task)
+                        }
+                    }
+
+                    if (uiState.activeProjects.isEmpty() && uiState.upcomingDeadlines.isEmpty()) {
+                        item {
+                            EmptyProjectsState(
+                                onCreateClick = onCreateProjectClick
+                            )
+                        }
+                    }
                 }
-            }
-
-            item {
-                Text("Quick Actions", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    ActionButton("AI Assistant", Icons.Default.SmartToy, onAIAssistantClick, Modifier.weight(1f))
-                    ActionButton("Analytics", Icons.Default.Analytics, onAnalyticsClick, Modifier.weight(1f))
-                }
-            }
-
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    ActionButton("Playlists", Icons.Default.QueueMusic, onHubClick, Modifier.weight(1f))
-                    ActionButton("Revenue", Icons.Default.AttachMoney, onAnalyticsClick, Modifier.weight(1f))
-                }
-            }
-
-            item {
-                Text("Upcoming Deadlines", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            }
-
-            items(3) { index ->
-                DeadlineCard(
-                    title = "Upload to DistroKid",
-                    date = "Oct ${9 + index}, 2025",
-                    daysLeft = 3 - index
-                )
             }
         }
     }
@@ -183,7 +215,7 @@ private fun MetricCard(
 }
 
 @Composable
-private fun ProjectThumbnail(title: String, progress: Float) {
+private fun ProjectThumbnail(project: Project) {
     GlassCard(
         modifier = Modifier
             .width(160.dp)
@@ -191,25 +223,44 @@ private fun ProjectThumbnail(title: String, progress: Float) {
         contentPadding = 0.dp
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary
+            if (project.artworkUri != null) {
+                AsyncImage(
+                    model = project.artworkUri,
+                    contentDescription = project.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary
+                                )
                             )
                         )
-                    )
-            )
+                )
+            }
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(12.dp)
             ) {
-                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
-                Text("${progress.toInt()}% complete", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.8f))
+                Text(
+                    project.title, 
+                    style = MaterialTheme.typography.titleMedium, 
+                    fontWeight = FontWeight.Bold, 
+                    color = Color.White,
+                    maxLines = 1
+                )
+                Text(
+                    project.type.name, 
+                    style = MaterialTheme.typography.bodySmall, 
+                    color = Color.White.copy(alpha = 0.8f)
+                )
             }
         }
     }
@@ -234,7 +285,10 @@ private fun ActionButton(
 }
 
 @Composable
-private fun DeadlineCard(title: String, date: String, daysLeft: Int) {
+private fun DeadlineCard(task: Task) {
+    val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    val daysLeft = java.time.temporal.ChronoUnit.DAYS.between(java.time.LocalDate.now(), task.dueDate).toInt()
+    
     RFCard(contentPadding = 12.dp) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -242,8 +296,8 @@ private fun DeadlineCard(title: String, date: String, daysLeft: Int) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-                Text(date, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(task.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                Text(dateFormat.format(java.util.Date.from(task.dueDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant())), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Surface(
                 shape = CircleShape,

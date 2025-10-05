@@ -85,13 +85,13 @@ fun ProjectDetailScreen(
         ) {
             // Header
             Text(
-                text = project?.name ?: "Loading…",
+                text = project?.title ?: "Loading…",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.padding(top = 4.dp))
             Text(
-                text = project?.let { "Release: ${formatDate(it.releaseDate)}" } ?: "",
+                text = project?.let { "Release: ${formatDate(it.releaseDate.time)}" } ?: "",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -99,7 +99,7 @@ fun ProjectDetailScreen(
             // Distributor upload deadline: 21 days before release
             project?.let { proj ->
                 val zone = ZoneId.systemDefault()
-                val releaseDate = Instant.ofEpochMilli(proj.releaseDate).atZone(zone).toLocalDate()
+                val releaseDate = Instant.ofEpochMilli(proj.releaseDate.time).atZone(zone).toLocalDate()
                 val uploadDeadline = releaseDate.minusDays(21)
                 val uploadDeadlineMillis = uploadDeadline.atStartOfDay(zone).toInstant().toEpochMilli()
                 Spacer(Modifier.padding(top = 4.dp))
@@ -114,7 +114,7 @@ fun ProjectDetailScreen(
             Spacer(Modifier.padding(top = 12.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 AsyncImage(
-                    model = project?.artworkUri,
+                    model = project?.artworkPath,
                     contentDescription = "Project Artwork",
                     modifier = Modifier
                         .size(96.dp)
@@ -125,7 +125,7 @@ fun ProjectDetailScreen(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 }) {
-                    Text(if (project?.artworkUri.isNullOrBlank()) "Add Artwork" else "Change Artwork")
+                    Text(if (project?.artworkPath.isNullOrBlank()) "Add Artwork" else "Change Artwork")
                 }
             }
 
@@ -152,8 +152,8 @@ fun ProjectDetailScreen(
         if (showAddDialog.value) {
             AddTaskDialog(
                 onDismiss = { showAddDialog.value = false },
-                onSave = { desc, deadlineMillis ->
-                    viewModel.addTask(desc, deadlineMillis)
+                onSave = { title, desc, deadlineMillis ->
+                    viewModel.addTask(title, desc, deadlineMillis)
                     showAddDialog.value = false
                 }
             )
@@ -163,8 +163,8 @@ fun ProjectDetailScreen(
             EditTaskDialog(
                 task = task,
                 onDismiss = { editTarget.value = null },
-                onSave = { newDesc, newDeadline ->
-                    viewModel.updateTask(task, newDesc, newDeadline)
+                onSave = { newTitle, newDesc, newDeadline ->
+                    viewModel.updateTask(task, newTitle, newDesc, newDeadline)
                     editTarget.value = null
                 }
             )
@@ -208,12 +208,12 @@ private fun TaskList(
                 Spacer(Modifier.padding(start = 8.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        task.description,
+                        task.title,
                         style = MaterialTheme.typography.bodyLarge,
                         textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None
                     )
                     Text(
-                        text = "Due: ${formatDate(task.deadline)}",
+                        text = "Due: ${formatDate(task.dueDate.time)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -229,9 +229,10 @@ private fun TaskList(
 @Composable
 private fun AddTaskDialog(
     onDismiss: () -> Unit,
-    onSave: (description: String, deadlineMillis: Long) -> Unit
+    onSave: (title: String, description: String, deadlineMillis: Long) -> Unit
 ) {
     val context = LocalContext.current
+    val title = remember { mutableStateOf("") }
     val description = remember { mutableStateOf("") }
 
     val today = remember { LocalDate.now() }
@@ -261,6 +262,13 @@ private fun AddTaskDialog(
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
+                    value = title.value,
+                    onValueChange = { title.value = it },
+                    label = { Text("Task Title") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.padding(top = 12.dp))
+                OutlinedTextField(
                     value = description.value,
                     onValueChange = { description.value = it },
                     label = { Text("Description") },
@@ -280,8 +288,8 @@ private fun AddTaskDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onSave(description.value, deadlineMillis.value) },
-                enabled = description.value.isNotBlank() && !isPast
+                onClick = { onSave(title.value, description.value, deadlineMillis.value) },
+                enabled = title.value.isNotBlank() && !isPast
             ) { Text("Save") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
@@ -292,14 +300,15 @@ private fun AddTaskDialog(
 private fun EditTaskDialog(
     task: ReleaseTask,
     onDismiss: () -> Unit,
-    onSave: (description: String, deadlineMillis: Long) -> Unit
+    onSave: (title: String, description: String, deadlineMillis: Long) -> Unit
 ) {
     val context = LocalContext.current
-    val description = remember { mutableStateOf(task.description) }
+    val title = remember { mutableStateOf(task.title) }
+    val description = remember { mutableStateOf(task.description ?: "") }
 
     val today = remember { LocalDate.now() }
     val todayStartMillis = remember { today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli() }
-    val deadlineMillis = remember { mutableStateOf(task.deadline) }
+    val deadlineMillis = remember { mutableStateOf(task.dueDate.time) }
 
     val calendar = remember(deadlineMillis.value) { Calendar.getInstance().apply { timeInMillis = deadlineMillis.value } }
 
@@ -324,6 +333,13 @@ private fun EditTaskDialog(
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
+                    value = title.value,
+                    onValueChange = { title.value = it },
+                    label = { Text("Task Title") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.padding(top = 12.dp))
+                OutlinedTextField(
                     value = description.value,
                     onValueChange = { description.value = it },
                     label = { Text("Description") },
@@ -343,8 +359,8 @@ private fun EditTaskDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onSave(description.value, deadlineMillis.value) },
-                enabled = description.value.isNotBlank() && !isPast
+                onClick = { onSave(title.value, description.value, deadlineMillis.value) },
+                enabled = title.value.isNotBlank() && !isPast
             ) { Text("Save") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
