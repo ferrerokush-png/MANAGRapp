@@ -1,7 +1,7 @@
 # ✅ Use Cases Implementation Complete!
 
 ## Overview
-Comprehensive business logic use cases created in `:core:domain` for the entire Release Flow app. All use cases include proper validation and error handling.
+Comprehensive business logic use cases created in `:core:domain` for the entire MANAGR app. All use cases include proper validation and error handling.
 
 ---
 

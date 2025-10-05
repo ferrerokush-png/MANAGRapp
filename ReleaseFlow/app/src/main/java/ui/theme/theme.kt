@@ -1,4 +1,4 @@
-package com.example.releaseflow.personal.ui.theme
+package com.managr.app.personal.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -34,7 +34,7 @@ data class RFShapesTokens(
 val LocalRFShapesTokens = staticCompositionLocalOf { RFShapesTokens() }
 
 @Composable
-fun ReleaseFlowTheme(
+fun MANAGRTheme(
     reduceMotion: Boolean = false,
     content: @Composable () -> Unit
 ) {

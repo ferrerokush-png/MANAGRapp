@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="17">
+      <module name="ReleaseFlow.app" target="21" />
+      <module name="ReleaseFlow.core.data" target="21" />
+      <module name="ReleaseFlow.core.design" target="21" />
+      <module name="ReleaseFlow.feature.analytics" target="21" />
+      <module name="ReleaseFlow.feature.assistant" target="21" />
+      <module name="ReleaseFlow.feature.calendar" target="21" />
+      <module name="ReleaseFlow.feature.projects" target="21" />
+      <module name="ReleaseFlow.feature.promotions" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>

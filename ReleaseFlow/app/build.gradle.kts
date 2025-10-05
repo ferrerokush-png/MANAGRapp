@@ -6,8 +6,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    id("org.jetbrains.kotlin.kapt")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
 }
 
 // Load secrets from local.properties (for personal use only)
@@ -20,11 +21,11 @@ val localProps = Properties().apply {
 val GEMINI_API_KEY: String = (localProps.getProperty("GEMINI_API_KEY") ?: "")
 
 android {
-    namespace = "com.example.releaseflow.personal"
+    namespace = "com.managr.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.releaseflow.personal"
+        applicationId = "com.managr.app"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
@@ -34,15 +35,19 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Enable code obfuscation for security
+            isDebuggable = false
         }
         debug {
-            // Enable for easier testing
+            // Disable obfuscation for easier debugging
             isMinifyEnabled = false
+            isDebuggable = true
         }
     }
 
@@ -121,7 +126,7 @@ dependencies {
 
     // Hilt DI (aligned with Gradle plugin)
     implementation("com.google.dagger:hilt-android:2.52")
-    kapt("com.google.dagger:hilt-compiler:2.52")
+    ksp("com.google.dagger:hilt-compiler:2.52")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     // WorkManager
@@ -133,14 +138,33 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-perf-ktx")
+    
+    // Security: Jetpack Security for encryption
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    
+    // Security: Biometric authentication
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    
+    // Security: Certificate Pinning
+    implementation("com.squareup.okhttp3:okhttp-tls:4.12.0")
+    
+    // Security: SafetyNet for device integrity
+    implementation("com.google.android.gms:play-services-safetynet:18.0.1")
 
+    // Performance & Memory
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+    
     testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.13.12")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.09.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation("io.mockk:mockk-android:1.13.12")
 
     // Removed third-party Compose Calendar to keep builds stable by default
     // implementation("com.kizitonwose.calendar:compose:2.5.0")

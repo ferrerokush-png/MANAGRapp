@@ -84,7 +84,7 @@ onActionClick = onAddDataClick
 
 ### In Terminal:
 ```bash
-cd ReleaseFlow
+cd MANAGR
 ./gradlew clean build
 ```
 

@@ -122,13 +122,13 @@ After successful sync, verify:
 
 Run this in terminal to see all modules:
 ```bash
-cd ReleaseFlow
+cd MANAGR
 ./gradlew projects
 ```
 
 Expected output:
 ```
-Root project 'ReleaseFlow'
+Root project 'MANAGR'
 +--- Project ':app'
 +--- Project ':core:design'
 +--- Project ':core:data'

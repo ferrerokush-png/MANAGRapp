@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.releaseflow.feature.analytics"
+    namespace = "com.managr.app.feature.analytics"
     compileSdk = 34
 
     defaultConfig {

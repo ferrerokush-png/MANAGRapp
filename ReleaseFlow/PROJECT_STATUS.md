@@ -1,4 +1,4 @@
-# 🎵 Release Flow - Project Status
+# 🎵 MANAGR - Project Status
 
 ## 📊 Overall Progress: 45%
 

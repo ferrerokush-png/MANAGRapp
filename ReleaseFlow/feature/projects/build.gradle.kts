@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.releaseflow.feature.projects"
+    namespace = "com.managr.app.feature.projects"
     compileSdk = 34
 
     defaultConfig {

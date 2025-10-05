@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.releaseflow.feature.promotions"
+    namespace = "com.managr.app.feature.promotions"
     compileSdk = 34
 
     defaultConfig {

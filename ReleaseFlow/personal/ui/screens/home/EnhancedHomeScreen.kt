@@ -1,4 +1,4 @@
-package com.example.releaseflow.personal.ui.screens.home
+package com.managr.app.personal.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,8 +19,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.releaseflow.core.design.component.*
-import com.example.releaseflow.core.domain.model.Project
+import com.managr.app.core.design.component.*
+import com.managr.app.core.domain.model.Project
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -45,7 +45,7 @@ fun EnhancedHomeScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.MusicNote, null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(8.dp))
-                        Text("Release Flow", fontWeight = FontWeight.Bold)
+                        Text("MANAGR", fontWeight = FontWeight.Bold)
                     }
                 },
                 actions = {

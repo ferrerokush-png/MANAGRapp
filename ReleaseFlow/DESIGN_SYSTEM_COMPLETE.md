@@ -1,7 +1,7 @@
 # ✅ Design System Complete - :core:design
 
 ## Overview
-Comprehensive design system built for Release Flow with Material 3, glass morphism effects, smooth animations, and accessibility support.
+Comprehensive design system built for MANAGR with Material 3, glass morphism effects, smooth animations, and accessibility support.
 
 ---
 
@@ -114,7 +114,7 @@ Comprehensive design system built for Release Flow with Material 3, glass morphi
 
 ### **4. Shared UI Components** ✅
 
-#### **RFButton.kt** - Release Flow Button
+#### **RFButton.kt** - MANAGR Button
 **Variants**:
 - PRIMARY - Filled button with primary color
 - SECONDARY - Outlined button
@@ -127,7 +127,7 @@ Comprehensive design system built for Release Flow with Material 3, glass morphi
 - Proper touch targets (48dp min)
 - Shorthand functions: `PrimaryButton()`, `SecondaryButton()`, `TextButton()`
 
-#### **RFTextField.kt** - Release Flow TextField
+#### **RFTextField.kt** - MANAGR TextField
 **Features**:
 - Label and placeholder support
 - Leading and trailing icons
@@ -138,7 +138,7 @@ Comprehensive design system built for Release Flow with Material 3, glass morphi
 - Single/multi-line support
 - Read-only and disabled states
 
-#### **RFCard.kt** - Release Flow Card
+#### **RFCard.kt** - MANAGR Card
 **Variants**:
 - Standard card with configurable elevation
 - `ElevatedRFCard()` - 8dp elevation
@@ -275,7 +275,7 @@ core/design/src/main/java/com/example/releaseflow/core/design/
 
 ### **Theme**
 ```kotlin
-ReleaseFlowTheme(
+MANAGRTheme(
     darkTheme = isSystemInDarkTheme(),
     dynamicColor = true,
     reducedMotion = false

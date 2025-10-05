@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ReleaseFlow"
+rootProject.name = "MANAGR"
 include(":app")
 
 // Core modules

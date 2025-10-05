@@ -1,12 +1,12 @@
-# Release Flow - Multi-Module Architecture
+# MANAGR - Multi-Module Architecture
 
 ## Overview
-Release Flow is built using a modular architecture with MVVM + Repository pattern. The app is divided into core modules (shared functionality) and feature modules (isolated features).
+MANAGR is built using a modular architecture with MVVM + Repository pattern. The app is divided into core modules (shared functionality) and feature modules (isolated features).
 
 ## Module Structure
 
 ```
-ReleaseFlow/
+MANAGR/
 ├── app/                           # Main application module
 ├── core/
 │   ├── design/                    # Design system & UI components
@@ -28,7 +28,7 @@ ReleaseFlow/
 - **Dependencies**: All core and feature modules
 - **Key Files**:
   - `MainActivity.kt` - Main activity with Hilt setup
-  - `ReleaseFlowApp.kt` - Application class
+  - `MANAGRApp.kt` - Application class
   - `AppNavGraph.kt` - Main navigation graph
 
 ### `:core:design` - Design System
@@ -36,12 +36,12 @@ ReleaseFlow/
 - **Purpose**: Shared UI components, theme, and design tokens
 - **Dependencies**: None (only Compose dependencies)
 - **Key Components**:
-  - `ReleaseFlowTheme` - Material 3 theme with light/dark mode
+  - `MANAGRTheme` - Material 3 theme with light/dark mode
   - `Glassmorphism.kt` - Glass morphism effects
   - `Typography`, `Shapes`, `Colors` - Design tokens
 - **Public API**:
   ```kotlin
-  @Composable fun ReleaseFlowTheme(content: @Composable () -> Unit)
+  @Composable fun MANAGRTheme(content: @Composable () -> Unit)
   fun Modifier.glassmorphism(color: Color?, shadowElevation: Int)
   ```
 

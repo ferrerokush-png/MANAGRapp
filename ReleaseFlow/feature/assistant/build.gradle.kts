@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.releaseflow.feature.assistant"
+    namespace = "com.managr.app.feature.assistant"
     compileSdk = 34
 
     defaultConfig {

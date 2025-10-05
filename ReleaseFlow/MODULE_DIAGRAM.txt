@@ -1,11 +1,11 @@
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                    RELEASE FLOW - MODULE ARCHITECTURE                         ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║                           MANAGR - MODULE ARCHITECTURE                                                             ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              :app (Application)                              │
 │  • MainActivity.kt                                                           │
-│  • ReleaseFlowApp.kt (@HiltAndroidApp)                                      │
+│  • MANAGRApp.kt (@HiltAndroidApp)                                      │
 │  • AppNavGraph.kt (Main navigation)                                         │
 └────────────────────────────────┬────────────────────────────────────────────┘
                                  │
@@ -15,7 +15,7 @@
 ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────┐
 │   :core:design    │  │    :core:data     │  │   :core:domain    │
 │                   │  │                   │  │                   │
-│ • ReleaseFlowTheme│  │ • Room Database   │  │ • Project         │
+│ • MANAGRTheme│  │ • Room Database   │  │ • Project         │
 │ • Glassmorphism   │  │ • Repositories    │  │ • Task            │
 │ • Typography      │  │ • DataStore       │  │ • Analytics       │
 │ • Shapes          │  │ • Retrofit        │  │ • Repository      │

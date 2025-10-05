@@ -1,15 +1,15 @@
 {
   "project_info": {
     "project_number": "123456789",
-    "project_id": "releaseflow-placeholder",
-    "storage_bucket": "releaseflow-placeholder.appspot.com"
+    "project_id": "managr-placeholder",
+    "storage_bucket": "managr-placeholder.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:123456789:android:abc123",
         "android_client_info": {
-          "package_name": "com.example.releaseflow.personal"
+          "package_name": "com.managr.app"
         }
       },
       "oauth_client": [],

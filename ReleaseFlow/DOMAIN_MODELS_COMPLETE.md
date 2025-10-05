@@ -1,7 +1,7 @@
 # ✅ Core Domain Models - Complete!
 
 ## Overview
-Comprehensive domain models have been created for the entire Release Flow app in the `:core:domain` module. This is a pure Kotlin module with no Android dependencies, following clean architecture principles.
+Comprehensive domain models have been created for the entire MANAGR app in the `:core:domain` module. This is a pure Kotlin module with no Android dependencies, following clean architecture principles.
 
 ---
 

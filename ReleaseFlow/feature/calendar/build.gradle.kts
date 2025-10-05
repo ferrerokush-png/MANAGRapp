@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.releaseflow.feature.calendar"
+    namespace = "com.managr.app.feature.calendar"
     compileSdk = 34
 
     defaultConfig {

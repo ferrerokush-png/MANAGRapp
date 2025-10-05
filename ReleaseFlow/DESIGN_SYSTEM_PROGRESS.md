@@ -135,7 +135,7 @@ core/design/src/main/java/com/example/releaseflow/core/design/
 ## 🚀 Ready to Use
 
 The following are production-ready:
-- ✅ ReleaseFlowTheme with dynamic colors
+- ✅ MANAGRTheme with dynamic colors
 - ✅ Complete typography system
 - ✅ Motion tokens and animation utilities
 - ✅ Glass morphism modifiers
@@ -147,7 +147,7 @@ The following are production-ready:
 
 ### Theme
 ```kotlin
-ReleaseFlowTheme(
+MANAGRTheme(
     darkTheme = isSystemInDarkTheme(),
     dynamicColor = true,
     reducedMotion = false

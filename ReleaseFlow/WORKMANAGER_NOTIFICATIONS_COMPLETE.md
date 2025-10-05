@@ -96,7 +96,7 @@ Complete WorkManager integration for scheduling deadline notifications with 3-da
 - Added POST_NOTIFICATIONS permission
 - Required for Android 13+
 
-#### **ReleaseFlowApp.kt** ✅
+#### **MANAGRApp.kt** ✅
 - Initializes notification channels on app start
 - Schedules daily deadline reminders
 - Runs automatically
@@ -174,7 +174,7 @@ Notifications:
 ## 📁 File Structure
 
 ```
-core/data/src/main/java/com/example/releaseflow/core/data/
+core/data/src/main/java/com/managr/app/core/data/
 ├── notification/
 │   ├── NotificationChannels.kt ✅
 │   ├── NotificationHelper.kt ✅
@@ -184,7 +184,7 @@ core/data/src/main/java/com/example/releaseflow/core/data/
     └── DeadlineReminderWorker.kt ✅
 
 app/src/main/
-├── java/.../ReleaseFlowApp.kt ✅ (Updated)
+├── java/.../MANAGRApp.kt ✅ (Updated)
 └── AndroidManifest.xml ✅ (Added permission)
 ```
 
@@ -195,7 +195,7 @@ app/src/main/
 ### **Schedule Notifications**
 ```kotlin
 // Automatically scheduled on app start
-// In ReleaseFlowApp.onCreate():
+// In MANAGRApp.onCreate():
 NotificationChannels.createChannels(this)
 NotificationScheduler(this).scheduleDeadlineReminders()
 ```
@@ -225,7 +225,7 @@ if (!permissionHandler.hasNotificationPermission()) {
 
 ---
 
-## 🔧 Configuration
+## 🛠️ Configuration
 
 ### **WorkManager Constraints**
 - Battery not low (battery-aware)

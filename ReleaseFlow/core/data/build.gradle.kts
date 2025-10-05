@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.releaseflow.core.data"
+    namespace = "com.managr.app.core.data"
     compileSdk = 34
 
     defaultConfig {
@@ -53,6 +53,13 @@ dependencies {
     
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    
+    // Security: SQLCipher for encrypted database
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
+    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
+    
+    // Security: Jetpack Security
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
     
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
