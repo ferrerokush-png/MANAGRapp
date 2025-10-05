@@ -17,8 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -92,7 +92,7 @@ fun ProjectListScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -219,7 +219,7 @@ fun ProjectCard(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     LinearProgressIndicator(
-                        progress = project.progress / 100f,
+                        progress = { project.progress / 100f },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(6.dp),

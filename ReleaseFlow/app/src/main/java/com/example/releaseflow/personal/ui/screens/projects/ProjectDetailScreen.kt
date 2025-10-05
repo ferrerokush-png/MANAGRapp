@@ -15,8 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
@@ -90,7 +89,7 @@ fun ProjectDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -265,7 +264,7 @@ fun ProgressSection(progress: Int, tasks: List<DemoTask>) {
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        progress = progress / 100f,
+                        progress = { progress / 100f },
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.primary,
                         strokeWidth = 4.dp
@@ -282,7 +281,7 @@ fun ProgressSection(progress: Int, tasks: List<DemoTask>) {
 
             // Progress bar
             LinearProgressIndicator(
-                progress = progress / 100f,
+                progress = { progress / 100f },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(8.dp),
