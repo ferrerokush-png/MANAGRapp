@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -73,6 +75,8 @@ fun ProjectDetailScreen(
         )
     }
 
+    val optionsExpanded = remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,6 +93,29 @@ fun ProjectDetailScreen(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"
                         )
+                    }
+                },
+                actions = {
+                    Box {
+                        IconButton(onClick = { optionsExpanded.value = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options"
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = optionsExpanded.value,
+                            onDismissRequest = { optionsExpanded.value = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Edit Project") },
+                                onClick = { optionsExpanded.value = false }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Delete Project") },
+                                onClick = { optionsExpanded.value = false }
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -337,15 +364,31 @@ fun TaskItem(
             }
 
             // More options
-            IconButton(
-                onClick = { /* TODO: Show options */ },
-                modifier = Modifier.size(24.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Task options",
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
+            Box {
+                val expanded = remember { mutableStateOf(false) }
+                IconButton(
+                    onClick = { expanded.value = true },
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Task options",
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded.value,
+                    onDismissRequest = { expanded.value = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Edit Task") },
+                        onClick = { expanded.value = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Delete Task") },
+                        onClick = { expanded.value = false }
+                    )
+                }
             }
         }
     }
