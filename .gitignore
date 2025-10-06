@@ -1,0 +1,54 @@
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+.gradle/
+local.properties
+.DS_Store
+
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Build folders
+build/
+*/build/
+out/
+
+# Gradle files
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# Keystore files
+*.jks
+*.keystore
+key.properties
+
+# Log Files
+*.log
+
+# Android Studio Captures folder
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Google Services
+google-services.json
+
+# Crashlytics
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+com_crashlytics_export_strings.xml
+
+# Navigation Safe Args
+**/navigation.json
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
