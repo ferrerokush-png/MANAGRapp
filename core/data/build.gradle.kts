@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.managr.app.core.data"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 28
@@ -54,8 +54,8 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     
-    // Security: SQLCipher for encrypted database
-    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
+    // Security: SQLCipher for encrypted database (16KB page size compatible)
+    implementation("net.zetetic:sqlcipher-android:4.6.1")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
     
     // Security: Jetpack Security

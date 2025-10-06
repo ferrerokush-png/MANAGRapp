@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.managr.app.feature.promotions"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 28

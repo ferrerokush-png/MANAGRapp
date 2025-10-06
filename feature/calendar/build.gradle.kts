@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.managr.app.feature.calendar"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 28
