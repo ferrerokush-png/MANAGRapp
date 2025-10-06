@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Production configuration -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Trust system CAs -->
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- Domain-specific configurations -->
+    <domain-config cleartextTrafficPermitted="false">
+        <!-- Your API domain -->
+        <domain includeSubdomains="true">api.managr.com</domain>
+        <pin-set expiration="2026-12-31">
+            <!-- IMPORTANT: Replace these with your actual certificate pins before production -->
+            <!-- Generate with: openssl s_client -servername api.managr.com -connect api.managr.com:443 | openssl x509 -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64 -->
+            <!-- Or use CertificatePinGenerator.generateCertificatePin("api.managr.com") in debug builds -->
+            <pin digest="SHA-256">AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin>
+            <pin digest="SHA-256">BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin>
+        </pin-set>
+    </domain-config>
+    
+    <!-- Firebase domains -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">firebase.googleapis.com</domain>
+        <domain includeSubdomains="true">firebasestorage.googleapis.com</domain>
+        <domain includeSubdomains="true">firebaseinstallations.googleapis.com</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+    
+    <!-- Debug configuration (only for debug builds) -->
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Trust user-added CAs for debugging -->
+            <certificates src="user" />
+            <certificates src="system" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
+

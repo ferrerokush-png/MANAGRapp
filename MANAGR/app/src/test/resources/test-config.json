@@ -1,0 +1,100 @@
+{
+  "testConfiguration": {
+    "database": {
+      "name": "test_managr.db",
+      "inMemory": true,
+      "clearOnStart": true,
+      "clearOnEnd": true
+    },
+    "network": {
+      "timeout": 5000,
+      "retryCount": 3,
+      "mockEnabled": true,
+      "mockDelay": 100
+    },
+    "ui": {
+      "timeout": 10000,
+      "animationDisabled": true,
+      "screenshotEnabled": false,
+      "videoEnabled": false
+    },
+    "performance": {
+      "memoryLimit": "512m",
+      "cpuLimit": 80,
+      "monitoringEnabled": true,
+      "profilingEnabled": false
+    },
+    "security": {
+      "encryptionKey": "test_key_12345",
+      "algorithm": "AES",
+      "testMode": true
+    },
+    "analytics": {
+      "enabled": false,
+      "debug": true,
+      "testMode": true
+    },
+    "notifications": {
+      "enabled": false,
+      "channelId": "test_channel",
+      "testMode": true
+    },
+    "files": {
+      "tempDir": "/tmp/managr_test",
+      "maxSize": "10MB",
+      "cleanup": true
+    },
+    "logging": {
+      "level": "DEBUG",
+      "file": "test.log",
+      "console": true
+    },
+    "coverage": {
+      "enabled": true,
+      "threshold": 80,
+      "excludes": [
+        "**/test/**",
+        "**/androidTest/**",
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*"
+      ]
+    },
+    "parallel": {
+      "enabled": true,
+      "threads": 4,
+      "maxThreads": 8
+    },
+    "timeout": {
+      "default": 30000,
+      "long": 60000,
+      "short": 5000,
+      "ui": 10000
+    },
+    "retry": {
+      "enabled": true,
+      "maxAttempts": 3,
+      "delay": 1000
+    },
+    "screenshot": {
+      "enabled": false,
+      "onFailure": true,
+      "onSuccess": false,
+      "directory": "screenshots"
+    },
+    "video": {
+      "enabled": false,
+      "onFailure": true,
+      "onSuccess": false,
+      "directory": "videos"
+    },
+    "reporting": {
+      "enabled": true,
+      "format": "html",
+      "directory": "reports",
+      "includeScreenshots": false,
+      "includeVideos": false
+    }
+  }
+}
