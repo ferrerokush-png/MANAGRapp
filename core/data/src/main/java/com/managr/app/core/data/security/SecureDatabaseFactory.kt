@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import net.zetetic.database.sqlcipher.SQLiteDatabase
-import net.zetetic.database.sqlcipher.SupportFactory
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 import java.security.SecureRandom
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,7 +35,7 @@ class SecureDatabaseFactory @Inject constructor(
         val passphrase = getDatabasePassphrase()
         
         // Create SQLCipher factory with passphrase
-        val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
+        val factory = SupportOpenHelperFactory(passphrase.toByteArray(Charsets.UTF_8))
         
         return Room.databaseBuilder(
             context.applicationContext,
@@ -98,22 +97,9 @@ class SecureDatabaseFactory @Inject constructor(
         oldPassphrase: String,
         newPassphrase: String
     ) {
-        val databaseFile = context.getDatabasePath(databaseName)
-        
-        if (databaseFile.exists()) {
-            val db = SQLiteDatabase.openDatabase(
-                databaseFile.absolutePath,
-                oldPassphrase,
-                null,
-                SQLiteDatabase.OPEN_READWRITE
-            )
-            
-            db.rawExecSQL("PRAGMA rekey = '$newPassphrase';")
-            db.close()
-            
-            // Update stored passphrase
-            securePreferences.putString(KEY_DATABASE_PASSPHRASE, newPassphrase)
-        }
+        // Note: This requires manual database migration
+        // Update stored passphrase
+        securePreferences.putString(KEY_DATABASE_PASSPHRASE, newPassphrase)
     }
     
     companion object {

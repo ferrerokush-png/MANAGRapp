@@ -204,7 +204,7 @@ class RuntimeSecurityManager @Inject constructor(
             
             // Get signature hash
             @Suppress("DEPRECATION")
-            val signature = packageInfo.signatures[0]
+            val signature = packageInfo.signatures?.firstOrNull() ?: return false
             val md = java.security.MessageDigest.getInstance("SHA-256")
             val signatureHash = md.digest(signature.toByteArray())
             
