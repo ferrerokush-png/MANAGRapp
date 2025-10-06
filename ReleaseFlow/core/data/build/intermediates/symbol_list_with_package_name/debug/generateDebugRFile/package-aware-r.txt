@@ -1,2 +1,0 @@
-com.managr.app.core.data
-drawable ic_stat_releaseflow
